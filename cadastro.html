@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B7Store - Admin: Cadastrar Produto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-50 font-sans min-h-screen pb-12">
+
+    <header class="bg-white border-b border-slate-100 px-6 py-4 mb-10">
+        <div class="mx-auto flex max-w-screen-xl items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-xl font-bold text-slate-900">B7<span class="text-blue-600">Store</span></a>
+                <span class="text-sm text-slate-400">|</span>
+                <h1 class="text-xl font-bold text-slate-900">Painel Administrativo</h1>
+            </div>
+            <div class="flex gap-4">
+                <span id="admin-nome" class="text-sm text-slate-600">👑 Carregando...</span>
+                <button id="btn-logout" class="text-sm font-medium text-rose-600 hover:underline">Sair do Painel</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-6xl px-6 grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <!-- Formulário de Cadastro/Edição -->
+        <div class="rounded-3xl bg-white p-8 shadow-sm border border-slate-100 lg:col-span-1 h-fit sticky top-4">
+            <h2 id="form-title" class="text-2xl font-bold tracking-tight text-slate-900 mb-6">📦 Novo Produto</h2>
+            
+            <div id="form-message" class="hidden rounded-xl p-3 text-sm mb-4"></div>
+            
+            <form id="produto-form" class="space-y-5">
+                <input type="hidden" id="produto-id" value="">
+                
+                <div>
+                    <label for="prod-nome" class="block text-sm font-medium text-slate-700">Nome do Produto *</label>
+                    <input type="text" id="prod-nome" placeholder="Ex: Camiseta Node JS" required 
+                        class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition">
+                </div>
+                
+                <div>
+                    <label for="prod-descricao" class="block text-sm font-medium text-slate-700">Descrição</label>
+                    <textarea id="prod-descricao" rows="3" placeholder="Descrição detalhada do produto..." 
+                        class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition"></textarea>
+                </div>
+                
+                <div>
+                    <label for="prod-preco" class="block text-sm font-medium text-slate-700">Preço (R$) *</label>
+                    <input type="number" step="0.01" id="prod-preco" placeholder="Ex: 59.90" required 
+                        class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition">
+                </div>
+                
+                <div>
+                    <label for="prod-preco-original" class="block text-sm font-medium text-slate-700">Preço Original (R$) <span class="text-slate-400 text-xs">(opcional)</span></label>
+                    <input type="number" step="0.01" id="prod-preco-original" placeholder="Ex: 89.90" 
+                        class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition">
+                </div>
+                
+                <div>
+                    <label for="prod-estoque" class="block text-sm font-medium text-slate-700">Estoque</label>
+                    <input type="number" id="prod-estoque" value="10" 
+                        class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition">
+                </div>
+                
+                <div>
+                    <label for="prod-imagem" class="block text-sm font-medium text-slate-700">URL da Imagem</label>
+                    <input type="url" id="prod-imagem" placeholder="https://exemplo.com/imagem.jpg" 
+                        class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition">
+                    <p class="text-xs text-slate-400 mt-1">Deixe em branco para usar imagem padrão</p>
+                </div>
+                
+                <div>
+                    <label for="prod-categoria" class="block text-sm font-medium text-slate-700">Categoria</label>
+                    <select id="prod-categoria" class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition">
+                        <option value="Camisetas">👕 Camisetas</option>
+                        <option value="Kits">📦 Kits B7Web</option>
+                        <option value="Acessórios">🧢 Acessórios</option>
+                        <option value="Eletrônicos">💻 Eletrônicos</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="prod-info" class="block text-sm font-medium text-slate-700">Tag/Destaque <span class="text-slate-400 text-xs">(opcional)</span></label>
+                    <input type="text" id="prod-info" placeholder="Ex: 10% OFF, Lançamento, Exclusivo" 
+                        class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none focus:border-slate-400 focus:bg-white transition">
+                </div>
+
+                <button type="submit" id="btn-submit" 
+                    class="w-full rounded-2xl bg-blue-600 p-4 text-sm font-semibold text-white transition hover:bg-blue-700">
+                    <i class="fas fa-save mr-2"></i>Cadastrar Produto
+                </button>
+                
+                <button type="button" id="btn-cancelar" 
+                    class="w-full rounded-2xl border border-slate-300 p-4 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hidden">
+                    <i class="fas fa-times mr-2"></i>Cancelar Edição
+                </button>
+            </form>
+        </div>
+
+        <!-- Lista de Produtos -->
+        <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-100 lg:col-span-2">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-900">📋 Produtos Cadastrados</h3>
+                <div class="relative">
+                    <input type="text" id="search-produto" placeholder="Buscar produto..." 
+                        class="pl-10 pr-4 py-2 border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <i class="fas fa-search absolute left-3 top-3 text-slate-400 text-sm"></i>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="border-b border-slate-200 text-xs font-semibold uppercase tracking-wider text-slate-400 bg-slate-50">
+                            <th class="px-4 py-3 rounded-l-xl">Produto</th>
+                            <th class="px-4 py-3">Preço</th>
+                            <th class="px-4 py-3">Estoque</th>
+                            <th class="px-4 py-3">Categoria</th>
+                            <th class="px-4 py-3 text-center rounded-r-xl">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lista-produtos" class="divide-y divide-slate-100">
+                        <tr><td colspan="5" class="px-4 py-8 text-center text-slate-400 text-sm">
+                            <i class="fas fa-spinner fa-spin mr-2"></i>Carregando produtos...
+                        </td></tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginação -->
+            <div id="paginacao" class="flex justify-center gap-2 mt-6"></div>
+        </div>
+    </main>
+
+    <!-- Modal de Confirmação de Exclusão -->
+    <div id="modal-excluir" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full mx-4">
+            <h3 class="text-xl font-bold text-slate-900 mb-4">⚠️ Confirmar Exclusão</h3>
+            <p class="text-slate-600 mb-6">Tem certeza que deseja excluir o produto "<span id="produto-nome-excluir" class="font-semibold"></span>"?</p>
+            <p class="text-sm text-red-500 mb-6">Esta ação não pode ser desfeita!</p>
+            <div class="flex gap-3">
+                <button id="confirmar-excluir" class="flex-1 bg-red-600 text-white py-3 rounded-2xl font-semibold hover:bg-red-700 transition">
+                    <i class="fas fa-trash mr-2"></i>Sim, Excluir
+                </button>
+                <button id="cancelar-excluir" class="flex-1 border border-slate-300 py-3 rounded-2xl font-semibold hover:bg-slate-50 transition">
+                    Cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // CONFIGURAÇÕES
+        // ============================================================
+        const API_BASE_URL = "https://back-loja.vercel.app";
+        let token = localStorage.getItem('b7store_token');
+        let currentUser = null;
+        let produtos = [];
+        let produtoEditandoId = null;
+        let currentPage = 1;
+        const itemsPerPage = 5;
+        let searchTerm = '';
+
+        // ============================================================
+        // VERIFICAÇÃO DE AUTENTICAÇÃO
+        // ============================================================
+        async function verificarAuth() {
+            if (!token) {
+                alert('🚫 Acesso restrito! Faça login primeiro.');
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) {
+                    localStorage.removeItem('b7store_token');
+                    localStorage.removeItem('b7store_user');
+                    alert('Sessão expirada. Faça login novamente.');
+                    window.location.href = 'login.html';
+                    return false;
+                }
+
+                currentUser = await response.json();
+                document.getElementById('admin-nome').innerHTML = `👑 ${currentUser.name || currentUser.email?.split('@')[0]}`;
+                return true;
+            } catch (error) {
+                console.error('Auth error:', error);
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        // ============================================================
+        // LISTAR PRODUTOS (DO SUPABASE VIA BACKEND)
+        // ============================================================
+        async function listarProdutos() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/produtos`);
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar produtos');
+                }
+                
+                const data = await response.json();
+                produtos = Array.isArray(data) ? data : [];
+                renderTabela();
+            } catch (err) { 
+                console.error('Erro ao listar produtos:', err);
+                document.getElementById('lista-produtos').innerHTML = `
+                    <tr><td colspan="5" class="px-4 py-8 text-center text-red-500 text-sm">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>Erro ao carregar produtos
+                    </td></tr>
+                `;
+            }
+        }
+
+        function renderTabela() {
+            const tbody = document.getElementById('lista-produtos');
+            
+            // Filtrar por busca
+            let filtered = produtos;
+            if (searchTerm) {
+                filtered = produtos.filter(p => 
+                    p.nome?.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+            
+            // Paginar
+            const totalPages = Math.ceil(filtered.length / itemsPerPage);
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const pageProducts = filtered.slice(start, end);
+            
+            if (pageProducts.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400 text-sm">
+                    Nenhum produto cadastrado ainda.
+                </td></tr>`;
+                document.getElementById('paginacao').innerHTML = '';
+                return;
+            }
+            
+            tbody.innerHTML = pageProducts.map(prod => {
+                const preco = Number(prod.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                return `
+                    <tr class="text-sm text-slate-700 hover:bg-slate-50 transition">
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-3">
+                                <img src="${prod.imagem_url || 'https://placehold.co/40x40'}" 
+                                     class="h-10 w-10 rounded-lg object-cover bg-slate-100" 
+                                     onerror="this.src='https://placehold.co/40x40'">
+                                <div>
+                                    <div class="font-medium text-slate-900">${prod.nome || 'Sem nome'}</div>
+                                    ${prod.info ? `<div class="text-xs text-blue-500">${prod.info}</div>` : ''}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 font-semibold text-blue-600">${preco}</td>
+                        <td class="px-4 py-3">
+                            <span class="${prod.estoque > 0 ? 'text-green-600' : 'text-red-500'}">
+                                ${prod.estoque > 0 ? `📦 ${prod.estoque} unidades` : '❌ Esgotado'}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded-lg text-xs">${prod.categoria || '-'}</span>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            <div class="flex gap-2 justify-center">
+                                <button onclick="editarProduto(${prod.id})" 
+                                        class="text-blue-600 hover:text-blue-800 transition p-1" title="Editar">
+                                    <i class="fas fa-edit text-lg"></i>
+                                </button>
+                                <button onclick="abrirModalExcluir(${prod.id}, '${prod.nome?.replace(/'/g, "\\'")}')" 
+                                        class="text-red-600 hover:text-red-800 transition p-1" title="Excluir">
+                                    <i class="fas fa-trash-alt text-lg"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Renderizar paginação
+            renderPaginacao(totalPages);
+        }
+        
+        function renderPaginacao(totalPages) {
+            const container = document.getElementById('paginacao');
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            let pagesHtml = '';
+            for (let i = 1; i <= totalPages; i++) {
+                pagesHtml += `
+                    <button onclick="irParaPagina(${i})" 
+                        class="px-3 py-1 rounded-lg text-sm transition ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                        ${i}
+                    </button>
+                `;
+            }
+            container.innerHTML = pagesHtml;
+        }
+        
+        function irParaPagina(page) {
+            currentPage = page;
+            renderTabela();
+        }
+        
+        function buscarProdutos() {
+            currentPage = 1;
+            renderTabela();
+        }
+
+        // ============================================================
+        // CADASTRAR / ATUALIZAR PRODUTO
+        // ============================================================
+        async function salvarProduto(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('produto-id').value;
+            const nome = document.getElementById('prod-nome').value;
+            const descricao = document.getElementById('prod-descricao').value;
+            const preco = parseFloat(document.getElementById('prod-preco').value);
+            const precoOriginal = document.getElementById('prod-preco-original').value;
+            const estoque = parseInt(document.getElementById('prod-estoque').value);
+            const imagemUrl = document.getElementById('prod-imagem').value;
+            const categoria = document.getElementById('prod-categoria').value;
+            const info = document.getElementById('prod-info').value;
+            
+            // Validações
+            if (!nome || !preco) {
+                mostrarMensagem('⚠️ Nome e preço são obrigatórios!', 'error');
+                return;
+            }
+            
+            const payload = {
+                nome: nome,
+                descricao: descricao || '',
+                preco: preco,
+                preco_original: precoOriginal ? parseFloat(precoOriginal) : null,
+                estoque: estoque || 0,
+                imagem_url: imagemUrl || null,
+                categoria: categoria,
+                info: info || ''
+            };
+            
+            const isEditando = id && id !== '';
+            const url = isEditando 
+                ? `${API_BASE_URL}/api/produtos/${id}`
+                : `${API_BASE_URL}/api/produtos`;
+            const method = isEditando ? 'PUT' : 'POST';
+            
+            // Mostrar loading
+            const btnSubmit = document.getElementById('btn-submit');
+            const originalText = btnSubmit.innerHTML;
+            btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Salvando...';
+            btnSubmit.disabled = true;
+            
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('b7store_token');
+                        alert('Sessão expirada. Faça login novamente.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    throw new Error(data.mensagem || data.error || 'Erro ao salvar produto');
+                }
+                
+                mostrarMensagem(isEditando ? '✅ Produto atualizado com sucesso!' : '✅ Produto cadastrado com sucesso!', 'success');
+                resetarFormulario();
+                await listarProdutos();
+                
+            } catch (err) {
+                console.error('Erro:', err);
+                mostrarMensagem('❌ ' + err.message, 'error');
+            } finally {
+                btnSubmit.innerHTML = originalText;
+                btnSubmit.disabled = false;
+            }
+        }
+        
+        // ============================================================
+        // EDITAR PRODUTO
+        // ============================================================
+        async function editarProduto(id) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/produtos/${id}`);
+                if (!response.ok) throw new Error('Erro ao buscar produto');
+                
+                const produto = await response.json();
+                
+                produtoEditandoId = id;
+                document.getElementById('produto-id').value = produto.id;
+                document.getElementById('prod-nome').value = produto.nome || '';
+                document.getElementById('prod-descricao').value = produto.descricao || '';
+                document.getElementById('prod-preco').value = produto.preco || '';
+                document.getElementById('prod-preco-original').value = produto.preco_original || '';
+                document.getElementById('prod-estoque').value = produto.estoque || 0;
+                document.getElementById('prod-imagem').value = produto.imagem_url || '';
+                document.getElementById('prod-categoria').value = produto.categoria || 'Camisetas';
+                document.getElementById('prod-info').value = produto.info || '';
+                
+                document.getElementById('form-title').innerHTML = '✏️ Editar Produto';
+                document.getElementById('btn-submit').innerHTML = '<i class="fas fa-save mr-2"></i>Atualizar Produto';
+                document.getElementById('btn-cancelar').classList.remove('hidden');
+                
+                document.querySelector('.lg\\:col-span-1').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (err) {
+                console.error('Erro ao carregar produto para edição:', err);
+                mostrarMensagem('Erro ao carregar dados do produto', 'error');
+            }
+        }
+        
+        function resetarFormulario() {
+            produtoEditandoId = null;
+            document.getElementById('produto-id').value = '';
+            document.getElementById('prod-nome').value = '';
+            document.getElementById('prod-descricao').value = '';
+            document.getElementById('prod-preco').value = '';
+            document.getElementById('prod-preco-original').value = '';
+            document.getElementById('prod-estoque').value = '10';
+            document.getElementById('prod-imagem').value = '';
+            document.getElementById('prod-categoria').value = 'Camisetas';
+            document.getElementById('prod-info').value = '';
+            
+            document.getElementById('form-title').innerHTML = '📦 Novo Produto';
+            document.getElementById('btn-submit').innerHTML = '<i class="fas fa-save mr-2"></i>Cadastrar Produto';
+            document.getElementById('btn-cancelar').classList.add('hidden');
+        }
+        
+        function mostrarMensagem(msg, tipo) {
+            const msgDiv = document.getElementById('form-message');
+            msgDiv.innerHTML = msg;
+            msgDiv.classList.remove('hidden', 'bg-red-100', 'border-red-400', 'text-red-700', 'bg-green-100', 'border-green-400', 'text-green-700');
+            
+            if (tipo === 'error') {
+                msgDiv.classList.add('bg-red-100', 'border', 'border-red-400', 'text-red-700');
+            } else {
+                msgDiv.classList.add('bg-green-100', 'border', 'border-green-400', 'text-green-700');
+            }
+            
+            setTimeout(() => {
+                msgDiv.classList.add('hidden');
+            }, 3000);
+        }
+
+        // ============================================================
+        // EXCLUIR PRODUTO
+        // ============================================================
+        let produtoParaExcluir = null;
+        const modalExcluir = document.getElementById('modal-excluir');
+        const produtoNomeExcluir = document.getElementById('produto-nome-excluir');
+        
+        function abrirModalExcluir(id, nome) {
+            produtoParaExcluir = id;
+            produtoNomeExcluir.textContent = nome;
+            modalExcluir.classList.remove('hidden');
+        }
+        
+        async function excluirProduto() {
+            if (!produtoParaExcluir) return;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/produtos/${produtoParaExcluir}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.mensagem || 'Erro ao excluir produto');
+                }
+                
+                mostrarMensagem('✅ Produto excluído com sucesso!', 'success');
+                await listarProdutos();
+                resetarFormulario();
+                
+            } catch (err) {
+                console.error('Erro:', err);
+                mostrarMensagem('❌ ' + err.message, 'error');
+            } finally {
+                fecharModal();
+            }
+        }
+        
+        function fecharModal() {
+            modalExcluir.classList.add('hidden');
+            produtoParaExcluir = null;
+        }
+
+        // ============================================================
+        // LOGOUT
+        // ============================================================
+        document.getElementById('btn-logout').addEventListener('click', () => {
+            localStorage.removeItem('b7store_token');
+            localStorage.removeItem('b7store_user');
+            window.location.href = 'index.html';
+        });
+        
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
+        document.getElementById('produto-form').addEventListener('submit', salvarProduto);
+        document.getElementById('btn-cancelar').addEventListener('click', resetarFormulario);
+        document.getElementById('confirmar-excluir').addEventListener('click', excluirProduto);
+        document.getElementById('cancelar-excluir').addEventListener('click', fecharModal);
+        
+        document.getElementById('search-produto')?.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            currentPage = 1;
+            buscarProdutos();
+        });
+        
+        modalExcluir.addEventListener('click', (e) => {
+            if (e.target === modalExcluir) fecharModal();
+        });
+
+        // ============================================================
+        // INICIALIZAÇÃO
+        // ============================================================
+        async function init() {
+            const authOk = await verificarAuth();
+            if (authOk) {
+                await listarProdutos();
+            }
+        }
+        
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>B7Store - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-slate-50 font-sans flex min-h-screen items-center justify-center p-6">
+
+    <div class="w-full max-w-md rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
+        <div class="mb-8 text-center">
+            <a href="index.html" class="text-3xl font-bold tracking-tight text-slate-900">B7<span class="text-blue-600">Store</span></a>
+            <p class="mt-2 text-sm text-slate-500">Faça login na sua conta</p>
+        </div>
+
+        <!-- Mensagens -->
+        <div id="error-message" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl text-sm mb-4"></div>
+        <div id="success-message" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl text-sm mb-4"></div>
+
+        <!-- Formulário de Login -->
+        <form id="login-form" class="space-y-5">
+            <div>
+                <label for="email" class="block text-sm font-medium text-slate-700">E-mail</label>
+                <input type="email" id="email" name="email" required 
+                    placeholder="seu@email.com"
+                    class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none transition focus:border-slate-400 focus:bg-white">
+            </div>
+            
+            <div>
+                <label for="password" class="block text-sm font-medium text-slate-700">Senha</label>
+                <input type="password" id="password" name="password" required 
+                    placeholder="Digite sua senha"
+                    class="mt-1 w-full rounded-2xl border border-slate-200 bg-slate-50 p-3.5 text-sm outline-none transition focus:border-slate-400 focus:bg-white">
+            </div>
+
+            <div class="flex justify-end">
+                <a href="#" class="text-xs text-blue-600 hover:underline">Esqueceu a senha?</a>
+            </div>
+
+            <button type="submit" id="btn-login" 
+                class="w-full rounded-2xl bg-blue-600 p-4 text-sm font-semibold text-white transition hover:bg-blue-700">
+                <i class="fas fa-sign-in-alt mr-2"></i>Entrar
+            </button>
+        </form>
+
+        <div class="mt-6 text-center">
+            <p class="text-sm text-slate-500">
+                Não tem uma conta? 
+                <a href="cadastro-cliente.html" class="text-blue-600 font-semibold hover:underline">Criar conta gratuita</a>
+            </p>
+        </div>
+        
+        <div class="mt-4 text-center">
+            <a href="index.html" class="text-xs text-slate-400 hover:underline">← Voltar para a loja</a>
+        </div>
+        
+        <!-- Link para admin (escondido, apenas para facilitar teste) -->
+        <div class="mt-4 text-center hidden">
+            <a href="cadastro.html" class="text-xs text-slate-300 hover:underline">Painel Admin</a>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "https://back-loja.vercel.app";
+
+        const form = document.getElementById('login-form');
+        const btnLogin = document.getElementById('btn-login');
+        const errorDiv = document.getElementById('error-message');
+        const successDiv = document.getElementById('success-message');
+
+        function mostrarMensagem(msg, tipo) {
+            if (tipo === 'error') {
+                errorDiv.innerHTML = msg;
+                errorDiv.classList.remove('hidden');
+                successDiv.classList.add('hidden');
+            } else {
+                successDiv.innerHTML = msg;
+                successDiv.classList.remove('hidden');
+                errorDiv.classList.add('hidden');
+            }
+            
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+                successDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            errorDiv.classList.add('hidden');
+            successDiv.classList.add('hidden');
+            
+            btnLogin.disabled = true;
+            btnLogin.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Entrando...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    if (response.status === 429) {
+                        throw new Error('Muitas tentativas. Aguarde 1 minuto.');
+                    }
+                    throw new Error(data.mensagem || data.message || 'Email ou senha inválidos');
+                }
+                
+                // Salvar token e dados
+                localStorage.setItem('b7store_token', data.token);
+                localStorage.setItem('b7store_user', JSON.stringify(data.usuario));
+                
+                mostrarMensagem('✅ Login realizado! Redirecionando...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+                
+            } catch (error) {
+                mostrarMensagem(error.message, 'error');
+            } finally {
+                btnLogin.disabled = false;
+                btnLogin.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Entrar';
+            }
+        });
+        
+        // Verificar se já está logado
+        const token = localStorage.getItem('b7store_token');
+        if (token) {
+            fetch(`${API_BASE_URL}/api/auth/me`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(res => {
+                if (res.ok) {
+                    window.location.href = 'index.html';
+                }
+            }).catch(() => {});
+        }
+    </script>
+</body>
+</html>

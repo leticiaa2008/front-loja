@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrinho - B7Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+
+    <!-- Header Warning -->
+    <div class="bg-black text-white text-center py-2 text-sm">
+        <span class="font-bold">FRETE GRÁTIS</span> para todo o Nordeste nas compras acima de R$ 199,00. 
+        <span class="font-bold">APROVEITA!</span>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center gap-8">
+                    <a href="index.html" class="text-2xl font-bold text-gray-800">B7<span class="text-blue-600">Store</span></a>
+                    <nav class="hidden md:flex gap-6">
+                        <a href="produtos.html" class="text-gray-600 hover:text-blue-600 transition">Camisetas</a>
+                        <a href="produtos.html" class="text-gray-600 hover:text-blue-600 transition">Kits B7Web</a>
+                        <a href="produtos.html" class="text-gray-600 hover:text-blue-600 transition">Acessórios</a>
+                        <a href="produtos.html" class="text-gray-600 hover:text-blue-600 transition">Eletrônicos</a>
+                    </nav>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <input type="text" id="searchInput" placeholder="Pesquisar..." class="hidden md:block px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <div id="authButtons" class="flex items-center gap-4"></div>
+                    <a href="checkout.html" class="relative">
+                        <i class="fas fa-shopping-bag text-2xl text-gray-700"></i>
+                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hidden">0</span>
+                    </a>
+                    <button id="mobileMenuBtn" class="md:hidden text-2xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="container mx-auto px-4 py-4 flex flex-col gap-3">
+                <a href="produtos.html" class="text-gray-600 py-2">Camisetas</a>
+                <a href="produtos.html" class="text-gray-600 py-2">Kits B7Web</a>
+                <a href="produtos.html" class="text-gray-600 py-2">Acessórios</a>
+                <a href="produtos.html" class="text-gray-600 py-2">Eletrônicos</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Checkout Header -->
+        <div class="flex items-center gap-3 mb-8">
+            <i class="fas fa-shopping-bag text-3xl text-blue-600"></i>
+            <h1 class="text-2xl font-bold">Sua sacola de compras <span id="itemCount" class="text-gray-500 text-lg">(0 itens)</span></h1>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Products Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow">
+                    <!-- Header -->
+                    <div class="grid grid-cols-3 gap-4 p-4 border-b bg-gray-50 font-semibold">
+                        <div>Produto</div>
+                        <div class="text-center">Quantidade</div>
+                        <div class="text-right">Preço</div>
+                    </div>
+                    
+                    <!-- Cart Items -->
+                    <div id="cartItems" class="divide-y">
+                        <div class="p-8 text-center text-gray-500">
+                            Seu carrinho está vazio. <a href="produtos.html" class="text-blue-600 hover:underline">Continue comprando</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Section -->
+            <div class="lg:col-span-1">
+                <!-- Shipping Calculator -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <h3 class="font-bold mb-4">Calcular frete e prazo</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="cepInput" placeholder="Digite o CEP" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button onclick="calculateShipping()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                            Calcular
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Shipping Result (hidden initially) -->
+                <div id="shippingResult" class="bg-white rounded-lg shadow p-6 mb-6 hidden">
+                    <div class="text-sm text-gray-600 mb-2" id="shippingAddress">Rua das Flores - Jardins da Serra - Campos</div>
+                    <div class="flex justify-between items-center">
+                        <div class="text-sm" id="shippingDays">Receba em até 7 dias úteis</div>
+                        <div class="font-bold text-blue-600 text-xl" id="shippingPrice">R$ 0,00</div>
+                    </div>
+                </div>
+
+                <!-- Subtotal -->
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="space-y-3">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Subtotal</span>
+                            <span id="subtotal" class="font-semibold">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between border-b pb-3">
+                            <span class="text-gray-600">Frete</span>
+                            <span id="shippingDisplay" class="font-semibold">--</span>
+                        </div>
+                        <div class="flex justify-between text-xl font-bold">
+                            <span>Total</span>
+                            <span id="total" class="text-blue-600">R$ 0,00</span>
+                        </div>
+                        <div class="text-center text-sm text-gray-500 py-2">
+                            Forma de pagamento via PIX
+                        </div>
+                        <button onclick="checkout()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                            Continuar para pagamento
+                        </button>
+                        <a href="produtos.html" class="block text-center text-blue-600 hover:underline text-sm mt-4">
+                            Comprar outros produtos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Newsletter -->
+    <section class="bg-blue-600 py-12 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-4 text-white">
+                    <i class="fas fa-envelope text-3xl"></i>
+                    <div>
+                        <h3 class="font-bold text-xl">Fique por dentro das promoções!</h3>
+                        <p>Coloque seu e-mail e seja o primeiro a saber</p>
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="email" id="newsletterEmail" placeholder="Qual seu e-mail?" class="px-4 py-2 rounded-lg w-64 focus:outline-none">
+                    <button onclick="subscribeNewsletter()" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">Enviar</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8">
+                <div>
+                    <a href="index.html" class="text-2xl font-bold">B7<span class="text-blue-400">Store</span></a>
+                    <ul class="mt-4 space-y-2">
+                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Camisetas</a></li>
+                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Kits B7Web</a></li>
+                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Acessórios</a></li>
+                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Eletrônicos</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4">Precisa de ajuda?</h3>
+                    <div class="space-y-2">
+                        <p class="flex items-center gap-2 text-gray-400"><i class="fas fa-envelope"></i> b7store@email.com</p>
+                        <p class="flex items-center gap-2 text-gray-400"><i class="fas fa-phone"></i> (00) 00000-0000</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4">Acompanhe nas redes sociais</h3>
+                    <div class="flex gap-4">
+                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+                <p>Se você leu isso aqui, saiba que está no caminho certo! Continue estudando e você chegará lá...</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE_URL = "https://back-loja.vercel.app";
+        let currentUser = null;
+        let cart = [];
+        let shippingCost = 0;
+        let selectedCep = null;
+
+        // Load cart from localStorage
+        function loadCart() {
+            const savedCart = localStorage.getItem('cart');
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+            }
+            renderCart();
+            updateCartCount();
+        }
+
+        // Render cart items
+        async function renderCart() {
+            const container = document.getElementById('cartItems');
+            const itemCountSpan = document.getElementById('itemCount');
+            
+            if (!cart || cart.length === 0) {
+                container.innerHTML = `
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-shopping-cart text-5xl mb-4 opacity-50"></i>
+                        <p>Seu carrinho está vazio.</p>
+                        <a href="produtos.html" class="inline-block mt-4 text-blue-600 hover:underline">Continue comprando</a>
+                    </div>
+                `;
+                itemCountSpan.textContent = '(0 itens)';
+                updateTotals();
+                return;
+            }
+
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            itemCountSpan.textContent = `(${totalItems} ${totalItems === 1 ? 'item' : 'itens'})`;
+
+            // Fetch full product details from API
+            let itemsHtml = '';
+            for (const item of cart) {
+                let product = item;
+                if (item.id && !item.name) {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/api/products/${item.id}`);
+                        if (response.ok) {
+                            product = await response.json();
+                            product.quantity = item.quantity;
+                        }
+                    } catch (error) {
+                        console.error('Error fetching product:', error);
+                    }
+                }
+                
+                itemsHtml += `
+                    <div class="grid grid-cols-3 gap-4 p-4 items-center" data-id="${item.id}">
+                        <div class="flex gap-3">
+                            <img src="${product.image_url || 'https://placehold.co/80x80/blue/white?text=Produto'}" alt="${product.name}" class="w-16 h-16 object-cover rounded">
+                            <div>
+                                <div class="font-semibold">${product.name || 'Produto'}</div>
+                                <button onclick="removeFromCart(${item.id})" class="text-red-500 text-sm hover:underline mt-1">
+                                    <i class="fas fa-trash-alt mr-1"></i>Remover
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex justify-center">
+                            <div class="flex items-center gap-2">
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-8 h-8 bg-gray-100 rounded-full hover:bg-gray-200 transition">-</button>
+                                <span class="w-8 text-center font-semibold">${item.quantity}</span>
+                                <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-8 h-8 bg-gray-100 rounded-full hover:bg-gray-200 transition">+</button>
+                            </div>
+                        </div>
+                        <div class="text-right font-semibold">
+                            R$ ${((product.price || 0) * item.quantity).toFixed(2)}
+                        </div>
+                    </div>
+                `;
+            }
+            container.innerHTML = itemsHtml;
+            updateTotals();
+        }
+
+        function updateQuantity(productId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(productId);
+                return;
+            }
+            
+            const item = cart.find(i => i.id === productId);
+            if (item) {
+                item.quantity = newQuantity;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                renderCart();
+                updateCartCount();
+            }
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(i => i.id !== productId);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartCount();
+            showNotification('Produto removido do carrinho!');
+        }
+
+        function updateCartCount() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('#cartCount');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
+            }
+        }
+
+        function updateTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
+            const total = subtotal + shippingCost;
+            
+            document.getElementById('subtotal').textContent = `R$ ${subtotal.toFixed(2)}`;
+            document.getElementById('total').textContent = `R$ ${total.toFixed(2)}`;
+            
+            if (shippingCost > 0) {
+                document.getElementById('shippingDisplay').textContent = `R$ ${shippingCost.toFixed(2)}`;
+            } else {
+                document.getElementById('shippingDisplay').textContent = '--';
+            }
+        }
+
+        async function calculateShipping() {
+            const cep = document.getElementById('cepInput').value.replace(/\D/g, '');
+            if (cep.length !== 8) {
+                showNotification('Digite um CEP válido com 8 dígitos', true);
+                return;
+            }
+            
+            // Simulate shipping calculation (in real app, call a CEP API)
+            showNotification('Calculando frete...');
+            
+            // Mock shipping calculation based on CEP
+            setTimeout(() => {
+                const lastDigit = parseInt(cep.slice(-1));
+                if (lastDigit < 3) {
+                    shippingCost = 0;
+                    document.getElementById('shippingDays').textContent = 'Frete Grátis! Entrega em até 5 dias úteis';
+                } else if (lastDigit < 6) {
+                    shippingCost = 15.90;
+                    document.getElementById('shippingDays').textContent = 'Receba em até 7 dias úteis';
+                } else {
+                    shippingCost = 29.90;
+                    document.getElementById('shippingDays').textContent = 'Receba em até 10 dias úteis';
+                }
+                
+                document.getElementById('shippingPrice').textContent = shippingCost === 0 ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2)}`;
+                document.getElementById('shippingResult').classList.remove('hidden');
+                updateTotals();
+                showNotification(`Frete calculado: ${shippingCost === 0 ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2)}`}`);
+            }, 1000);
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showNotification('Seu carrinho está vazio!', true);
+                return;
+            }
+            
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showNotification('Faça login para finalizar a compra!', true);
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 1500);
+                return;
+            }
+            
+            // Create order
+            const orderData = {
+                items: cart.map(item => ({
+                    product_id: item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                total: cart.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0) + shippingCost,
+                shipping_cost: shippingCost,
+                cep: document.getElementById('cepInput').value
+            };
+            
+            fetch(`${API_BASE_URL}/api/orders`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(async response => {
+                if (response.ok) {
+                    // Clear cart
+                    localStorage.removeItem('cart');
+                    showNotification('Pedido realizado com sucesso!');
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.mensagem || 'Erro ao criar pedido');
+                }
+            })
+            .catch(error => {
+                showNotification(error.message, true);
+            });
+        }
+
+        function showNotification(msg, isError = false) {
+            const notif = document.createElement('div');
+            notif.className = `fixed bottom-4 right-4 ${isError ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
+            notif.textContent = msg;
+            document.body.appendChild(notif);
+            setTimeout(() => notif.remove(), 3000);
+        }
+
+        async function subscribeNewsletter() {
+            const email = document.getElementById('newsletterEmail').value;
+            if (email) {
+                showNotification('Inscrito com sucesso!');
+                document.getElementById('newsletterEmail').value = '';
+            }
+        }
+
+        // Auth functions
+        async function checkAuth() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    if (response.ok) {
+                        currentUser = await response.json();
+                    } else {
+                        localStorage.removeItem('token');
+                    }
+                } catch (error) {
+                    console.error('Auth error:', error);
+                }
+            }
+            updateAuthButtons();
+        }
+
+        function updateAuthButtons() {
+            const container = document.getElementById('authButtons');
+            if (!container) return;
+            
+            if (currentUser) {
+                container.innerHTML = `
+                    <span class="text-sm text-gray-600 hidden md:block">Olá, ${currentUser.email?.split('@')[0]}</span>
+                    <button onclick="logout()" class="text-gray-700 hover:text-red-600 transition">
+                        <i class="fas fa-sign-out-alt text-xl"></i>
+                    </button>
+                `;
+            } else {
+                container.innerHTML = `
+                    <a href="login.html" class="text-gray-700 hover:text-blue-600 transition">
+                        <i class="fas fa-user text-xl"></i>
+                    </a>
+                `;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+
+        // Mobile menu
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        });
+
+        // Initialize
+        loadCart();
+        checkAuth();
+    </script>
+</body>
+</html>
