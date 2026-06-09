@@ -58,13 +58,11 @@
     </header>
 
     <main class="container mx-auto px-4 py-8">
-        <!-- Breadcrumb -->
         <div class="text-sm text-gray-500 mb-6">
             <a href="index.html" class="hover:text-blue-600">Home</a> > 
             <span id="categoryName" class="text-gray-700">Produtos</span>
         </div>
 
-        <!-- Info Bar -->
         <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
             <div class="text-gray-600">
                 <span id="productsCount">0</span> produtos encontrados
@@ -84,7 +82,6 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-8">
-            <!-- Filters Sidebar -->
             <aside id="filterSidebar" class="md:w-64 flex-shrink-0 hidden md:block">
                 <div class="bg-white rounded-lg shadow p-6 sticky top-24">
                     <h3 class="font-bold text-lg mb-4">Filtros</h3>
@@ -92,123 +89,54 @@
                     <div class="mb-6">
                         <h4 class="font-semibold mb-2">Categorias</h4>
                         <div class="space-y-2">
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" value="Camisetas" class="category-filter rounded">
-                                <span>Camisetas</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" value="Kits" class="category-filter rounded">
-                                <span>Kits B7Web</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" value="Acessórios" class="category-filter rounded">
-                                <span>Acessórios</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="checkbox" value="Eletrônicos" class="category-filter rounded">
-                                <span>Eletrônicos</span>
-                            </label>
+                            <label class="flex items-center gap-2"><input type="checkbox" value="Camisetas" class="category-filter rounded"><span>Camisetas</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" value="Kits" class="category-filter rounded"><span>Kits B7Web</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" value="Acessórios" class="category-filter rounded"><span>Acessórios</span></label>
+                            <label class="flex items-center gap-2"><input type="checkbox" value="Eletrônicos" class="category-filter rounded"><span>Eletrônicos</span></label>
                         </div>
                     </div>
 
                     <div class="mb-6">
                         <h4 class="font-semibold mb-2">Preço</h4>
                         <div class="space-y-2">
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="priceRange" value="" class="price-filter" checked>
-                                <span>Todos</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="priceRange" value="0-50" class="price-filter">
-                                <span>Até R$ 50</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="priceRange" value="50-100" class="price-filter">
-                                <span>R$ 50 - R$ 100</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="priceRange" value="100-200" class="price-filter">
-                                <span>R$ 100 - R$ 200</span>
-                            </label>
-                            <label class="flex items-center gap-2">
-                                <input type="radio" name="priceRange" value="200+" class="price-filter">
-                                <span>Acima de R$ 200</span>
-                            </label>
+                            <label class="flex items-center gap-2"><input type="radio" name="priceRange" value="" class="price-filter" checked><span>Todos</span></label>
+                            <label class="flex items-center gap-2"><input type="radio" name="priceRange" value="0-50" class="price-filter"><span>Até R$ 50</span></label>
+                            <label class="flex items-center gap-2"><input type="radio" name="priceRange" value="50-100" class="price-filter"><span>R$ 50 - R$ 100</span></label>
+                            <label class="flex items-center gap-2"><input type="radio" name="priceRange" value="100-200" class="price-filter"><span>R$ 100 - R$ 200</span></label>
+                            <label class="flex items-center gap-2"><input type="radio" name="priceRange" value="200+" class="price-filter"><span>Acima de R$ 200</span></label>
                         </div>
                     </div>
 
-                    <button onclick="clearFilters()" class="w-full mt-4 text-gray-500 hover:text-gray-700 text-sm">
-                        Limpar filtros
-                    </button>
+                    <button onclick="clearFilters()" class="w-full mt-4 text-gray-500 hover:text-gray-700 text-sm">Limpar filtros</button>
                 </div>
             </aside>
 
-            <!-- Products Grid -->
             <div class="flex-1">
                 <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="col-span-full text-center py-12">
-                        <i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i>
-                        <p class="mt-2 text-gray-500">Carregando produtos...</p>
-                    </div>
+                    <div class="col-span-full text-center py-12"><i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i><p class="mt-2 text-gray-500">Carregando produtos...</p></div>
                 </div>
-
                 <div id="pagination" class="flex justify-center gap-2 mt-8"></div>
             </div>
         </div>
     </main>
 
-    <!-- Newsletter -->
     <section class="bg-blue-600 py-12 mt-8">
         <div class="container mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-4 text-white">
-                    <i class="fas fa-envelope text-3xl"></i>
-                    <div>
-                        <h3 class="font-bold text-xl">Fique por dentro das promoções!</h3>
-                        <p>Coloque seu e-mail e seja o primeiro a saber</p>
-                    </div>
-                </div>
-                <div class="flex gap-2">
-                    <input type="email" id="newsletterEmail" placeholder="Qual seu e-mail?" class="px-4 py-2 rounded-lg w-64 focus:outline-none">
-                    <button onclick="subscribeNewsletter()" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">Enviar</button>
-                </div>
+                <div class="flex items-center gap-4 text-white"><i class="fas fa-envelope text-3xl"></i><div><h3 class="font-bold text-xl">Fique por dentro das promoções!</h3><p>Coloque seu e-mail e seja o primeiro a saber</p></div></div>
+                <div class="flex gap-2"><input type="email" id="newsletterEmail" placeholder="Qual seu e-mail?" class="px-4 py-2 rounded-lg w-64 focus:outline-none"><button onclick="subscribeNewsletter()" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition">Enviar</button></div>
             </div>
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="bg-gray-900 text-white py-12">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-3 gap-8">
-                <div>
-                    <a href="index.html" class="text-2xl font-bold">B7<span class="text-blue-400">Store</span></a>
-                    <ul class="mt-4 space-y-2">
-                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Camisetas</a></li>
-                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Kits B7Web</a></li>
-                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Acessórios</a></li>
-                        <li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Eletrônicos</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h3 class="font-bold mb-4">Precisa de ajuda?</h3>
-                    <div class="space-y-2">
-                        <p class="flex items-center gap-2 text-gray-400"><i class="fas fa-envelope"></i> b7store@email.com</p>
-                        <p class="flex items-center gap-2 text-gray-400"><i class="fas fa-phone"></i> (00) 00000-0000</p>
-                    </div>
-                </div>
-                <div>
-                    <h3 class="font-bold mb-4">Acompanhe nas redes sociais</h3>
-                    <div class="flex gap-4">
-                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
-                    </div>
-                </div>
+                <div><a href="index.html" class="text-2xl font-bold">B7<span class="text-blue-400">Store</span></a><ul class="mt-4 space-y-2"><li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Camisetas</a></li><li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Kits B7Web</a></li><li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Acessórios</a></li><li><a href="produtos.html" class="text-gray-400 hover:text-white transition">Eletrônicos</a></li></ul></div>
+                <div><h3 class="font-bold mb-4">Precisa de ajuda?</h3><div class="space-y-2"><p class="flex items-center gap-2 text-gray-400"><i class="fas fa-envelope"></i> b7store@email.com</p><p class="flex items-center gap-2 text-gray-400"><i class="fas fa-phone"></i> (00) 00000-0000</p></div></div>
+                <div><h3 class="font-bold mb-4">Acompanhe nas redes sociais</h3><div class="flex gap-4"><a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-instagram"></i></a><a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-linkedin"></i></a><a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-facebook"></i></a><a href="#" class="text-2xl text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a></div></div>
             </div>
-            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
-                <p>Se você leu isso aqui, saiba que está no caminho certo! Continue estudando e você chegará lá...</p>
-            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm"><p>Se você leu isso aqui, saiba que está no caminho certo! Continue estudando e você chegará lá...</p></div>
         </div>
     </footer>
 
@@ -221,10 +149,79 @@
         const productsPerPage = 9;
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
-        // Load products from API
+        // ============================================================
+        // AUTENTICAÇÃO CORRETA
+        // ============================================================
+        async function checkAuth() {
+            const token = localStorage.getItem('b7store_token');
+            
+            if (token) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                        headers: { 
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        currentUser = await response.json();
+                        console.log('Usuário logado:', currentUser.email);
+                    } else {
+                        localStorage.removeItem('b7store_token');
+                        localStorage.removeItem('b7store_user');
+                        currentUser = null;
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar auth:', error);
+                    currentUser = null;
+                }
+            } else {
+                currentUser = null;
+            }
+            
+            updateAuthButtons();
+        }
+
+        function updateAuthButtons() {
+            const container = document.getElementById('authButtons');
+            if (!container) return;
+            
+            if (currentUser) {
+                let nomeExibicao = "Usuário";
+                if (currentUser.name) {
+                    nomeExibicao = currentUser.name.split(' ')[0];
+                } else if (currentUser.email) {
+                    nomeExibicao = currentUser.email.split('@')[0];
+                }
+                
+                container.innerHTML = `
+                    <span class="text-sm text-gray-600 hidden md:block font-medium">Olá, ${nomeExibicao}</span>
+                    <button onclick="logout()" class="text-gray-700 hover:text-red-600 transition">
+                        <i class="fas fa-sign-out-alt text-xl"></i>
+                    </button>
+                    ${currentUser.role === 'admin' ? '<a href="cadastro.html" class="text-gray-700 hover:text-blue-600 transition"><i class="fas fa-cog text-xl"></i></a>' : ''}
+                `;
+            } else {
+                container.innerHTML = `<a href="login.html" class="text-gray-700 hover:text-blue-600 transition"><i class="fas fa-user text-xl"></i></a>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('b7store_token');
+            localStorage.removeItem('b7store_user');
+            currentUser = null;
+            updateAuthButtons();
+            showNotification('Você saiu da conta');
+            setTimeout(() => window.location.reload(), 1000);
+        }
+
+        // ============================================================
+        // PRODUTOS
+        // ============================================================
         async function loadProducts() {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/products`);
+                const response = await fetch(`${API_BASE_URL}/api/produtos`);
                 if (response.ok) {
                     allProducts = await response.json();
                 } else {
@@ -242,59 +239,59 @@
 
         function getDemoProducts() {
             return [
-                { id: 1, name: 'Camisa CSS - Azul', price: 59.90, original_price: 89.90, category: 'Camisetas', image_url: 'https://placehold.co/300x300/1e40af/white?text=CSS', stock: 10, description: 'Camisa estampada CSS' },
-                { id: 2, name: 'Camisa Node JS - Preta', price: 69.90, original_price: 99.90, category: 'Camisetas', image_url: 'https://placehold.co/300x300/166534/white?text=Node', stock: 8, description: 'Camisa estampada Node JS' },
-                { id: 3, name: 'Camisa React - Azul', price: 59.90, original_price: 89.90, category: 'Camisetas', image_url: 'https://placehold.co/300x300/0e7490/white?text=React', stock: 15, description: 'Camisa estampada React' },
-                { id: 4, name: 'Boné B7Web - Preto', price: 49.99, original_price: 79.90, category: 'Acessórios', image_url: 'https://placehold.co/300x300/1f2937/white?text=Boné', stock: 20, description: 'Boné exclusivo B7Web' },
-                { id: 5, name: 'Kit Dev Full Stack', price: 199.90, original_price: 299.90, category: 'Kits', image_url: 'https://placehold.co/300x300/7c3aed/white?text=Kit+Dev', stock: 5, description: 'Kit com camisa, caneca e adesivos' },
-                { id: 6, name: 'Caneca JavaScript', price: 29.90, original_price: 49.90, category: 'Acessórios', image_url: 'https://placehold.co/300x300/fbbf24/white?text=JS', stock: 30, description: 'Caneca com estampa JavaScript' },
-                { id: 7, name: 'Mouse Gamer B7', price: 149.90, original_price: 199.90, category: 'Eletrônicos', image_url: 'https://placehold.co/300x300/ef4444/white?text=Mouse', stock: 12, description: 'Mouse gamer RGB' },
-                { id: 8, name: 'Teclado Mecânico', price: 299.90, original_price: 399.90, category: 'Eletrônicos', image_url: 'https://placehold.co/300x300/22c55e/white?text=Teclado', stock: 7, description: 'Teclado mecânico switch blue' },
-                { id: 9, name: 'Camisa Python', price: 59.90, original_price: 89.90, category: 'Camisetas', image_url: 'https://placehold.co/300x300/2563eb/white?text=Python', stock: 11, description: 'Camisa estampada Python' }
+                { id: 1, nome: 'Camisa CSS - Azul', preco: 59.90, preco_original: 89.90, categoria: 'Camisetas', imagem_url: 'https://placehold.co/300x300/1e40af/white?text=CSS', estoque: 10 },
+                { id: 2, nome: 'Camisa Node JS - Preta', preco: 69.90, preco_original: 99.90, categoria: 'Camisetas', imagem_url: 'https://placehold.co/300x300/166534/white?text=Node', estoque: 8 },
+                { id: 3, nome: 'Camisa React - Azul', preco: 59.90, preco_original: 89.90, categoria: 'Camisetas', imagem_url: 'https://placehold.co/300x300/0e7490/white?text=React', estoque: 15 },
+                { id: 4, nome: 'Boné B7Web - Preto', preco: 49.99, preco_original: 79.90, categoria: 'Acessórios', imagem_url: 'https://placehold.co/300x300/1f2937/white?text=Boné', estoque: 20 },
+                { id: 5, nome: 'Kit Dev Full Stack', preco: 199.90, preco_original: 299.90, categoria: 'Kits', imagem_url: 'https://placehold.co/300x300/7c3aed/white?text=Kit+Dev', estoque: 5 },
+                { id: 6, nome: 'Caneca JavaScript', preco: 29.90, preco_original: 49.90, categoria: 'Acessórios', imagem_url: 'https://placehold.co/300x300/fbbf24/white?text=JS', estoque: 30 },
+                { id: 7, nome: 'Mouse Gamer B7', preco: 149.90, preco_original: 199.90, categoria: 'Eletrônicos', imagem_url: 'https://placehold.co/300x300/ef4444/white?text=Mouse', estoque: 12 },
+                { id: 8, nome: 'Teclado Mecânico', preco: 299.90, preco_original: 399.90, categoria: 'Eletrônicos', imagem_url: 'https://placehold.co/300x300/22c55e/white?text=Teclado', estoque: 7 }
             ];
         }
 
         function applyFiltersAndRender() {
-            // Apply category filter
+            let filtered = [...allProducts];
+
+            // Category filter
             const selectedCategories = Array.from(document.querySelectorAll('.category-filter:checked')).map(cb => cb.value);
             if (selectedCategories.length > 0) {
-                filteredProducts = allProducts.filter(p => selectedCategories.includes(p.category));
-            } else {
-                filteredProducts = [...allProducts];
+                filtered = filtered.filter(p => selectedCategories.includes(p.categoria));
             }
 
-            // Apply price filter
+            // Price filter
             const selectedPrice = document.querySelector('input[name="priceRange"]:checked')?.value;
             if (selectedPrice && selectedPrice !== '') {
                 if (selectedPrice === '0-50') {
-                    filteredProducts = filteredProducts.filter(p => p.price <= 50);
+                    filtered = filtered.filter(p => p.preco <= 50);
                 } else if (selectedPrice === '50-100') {
-                    filteredProducts = filteredProducts.filter(p => p.price > 50 && p.price <= 100);
+                    filtered = filtered.filter(p => p.preco > 50 && p.preco <= 100);
                 } else if (selectedPrice === '100-200') {
-                    filteredProducts = filteredProducts.filter(p => p.price > 100 && p.price <= 200);
+                    filtered = filtered.filter(p => p.preco > 100 && p.preco <= 200);
                 } else if (selectedPrice === '200+') {
-                    filteredProducts = filteredProducts.filter(p => p.price > 200);
+                    filtered = filtered.filter(p => p.preco > 200);
                 }
             }
 
-            // Apply search filter
+            // Search filter
             const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || '';
             if (searchTerm) {
-                filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+                filtered = filtered.filter(p => p.nome.toLowerCase().includes(searchTerm));
             }
 
-            // Apply sorting
+            // Sorting
             const sortValue = document.getElementById('sortSelect')?.value;
             if (sortValue === 'price_asc') {
-                filteredProducts.sort((a, b) => a.price - b.price);
+                filtered.sort((a, b) => a.preco - b.preco);
             } else if (sortValue === 'price_desc') {
-                filteredProducts.sort((a, b) => b.price - a.price);
+                filtered.sort((a, b) => b.preco - a.preco);
             } else if (sortValue === 'name_asc') {
-                filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                filtered.sort((a, b) => a.nome.localeCompare(b.nome));
             } else if (sortValue === 'name_desc') {
-                filteredProducts.sort((a, b) => b.name.localeCompare(a.name));
+                filtered.sort((a, b) => b.nome.localeCompare(a.nome));
             }
 
+            filteredProducts = filtered;
             document.getElementById('productsCount').textContent = filteredProducts.length;
             renderProducts();
         }
@@ -306,12 +303,7 @@
             const pageProducts = filteredProducts.slice(start, end);
 
             if (pageProducts.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full text-center py-12">
-                        <i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i>
-                        <p class="text-gray-500">Nenhum produto encontrado.</p>
-                    </div>
-                `;
+                container.innerHTML = `<div class="col-span-full text-center py-12"><i class="fas fa-box-open text-5xl text-gray-300 mb-4"></i><p class="text-gray-500">Nenhum produto encontrado.</p></div>`;
                 document.getElementById('pagination').innerHTML = '';
                 return;
             }
@@ -319,26 +311,18 @@
             container.innerHTML = pageProducts.map(product => `
                 <div class="product-card bg-white rounded-lg shadow overflow-hidden group cursor-pointer" onclick="goToProduct(${product.id})">
                     <div class="relative">
-                        <img src="${product.image_url || 'https://placehold.co/300x300/blue/white?text=Produto'}" alt="${product.name}" class="w-full h-64 object-cover">
-                        <button onclick="event.stopPropagation(); addToFav(${product.id})" class="absolute top-2 right-2 bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition">
-                            <i class="far fa-heart text-gray-600"></i>
-                        </button>
-                        ${product.original_price ? `
-                            <div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                -${Math.round((1 - product.price / product.original_price) * 100)}%
-                            </div>
-                        ` : ''}
+                        <img src="${product.imagem_url || 'https://placehold.co/300x300/blue/white?text=Produto'}" alt="${product.nome}" class="w-full h-64 object-cover">
+                        <button onclick="event.stopPropagation(); addToFav(${product.id})" class="absolute top-2 right-2 bg-white rounded-full p-2 opacity-0 group-hover:opacity-100 transition"><i class="far fa-heart text-gray-600"></i></button>
+                        ${product.preco_original ? `<div class="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">-${Math.round((1 - product.preco / product.preco_original) * 100)}%</div>` : ''}
                     </div>
                     <div class="p-4">
-                        <h3 class="font-semibold text-lg line-clamp-1">${product.name}</h3>
+                        <h3 class="font-semibold text-lg line-clamp-1">${product.nome}</h3>
                         <div class="flex items-center gap-2 mt-2">
-                            <p class="text-blue-600 font-bold text-xl">R$ ${Number(product.price).toFixed(2)}</p>
-                            ${product.original_price ? `<p class="text-gray-400 line-through text-sm">R$ ${Number(product.original_price).toFixed(2)}</p>` : ''}
+                            <p class="text-blue-600 font-bold text-xl">R$ ${Number(product.preco).toFixed(2)}</p>
+                            ${product.preco_original ? `<p class="text-gray-400 line-through text-sm">R$ ${Number(product.preco_original).toFixed(2)}</p>` : ''}
                         </div>
                         <p class="text-gray-500 text-sm mt-1">Pagamento via PIX</p>
-                        <button onclick="event.stopPropagation(); addToCart(${product.id}, '${product.name}', ${product.price})" class="w-full mt-3 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                            Adicionar à sacola
-                        </button>
+                        <button onclick="event.stopPropagation(); addToCart(${product.id}, '${product.nome}', ${product.preco})" class="w-full mt-3 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">Adicionar à sacola</button>
                     </div>
                 </div>
             `).join('');
@@ -357,11 +341,7 @@
 
             let pagesHtml = '';
             for (let i = 1; i <= totalPages; i++) {
-                pagesHtml += `
-                    <button onclick="goToPage(${i})" class="px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition">
-                        ${i}
-                    </button>
-                `;
+                pagesHtml += `<button onclick="goToPage(${i})" class="px-3 py-1 rounded ${i === currentPage ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'} transition">${i}</button>`;
             }
             paginationDiv.innerHTML = pagesHtml;
         }
@@ -376,6 +356,20 @@
             window.location.href = `product.html?id=${id}`;
         }
 
+        function clearFilters() {
+            document.querySelectorAll('.category-filter:checked').forEach(cb => cb.checked = false);
+            document.querySelectorAll('input[name="priceRange"]').forEach(radio => {
+                if (radio.value === '') radio.checked = true;
+            });
+            document.getElementById('searchInput').value = '';
+            document.getElementById('mobileSearch').value = '';
+            currentPage = 1;
+            applyFiltersAndRender();
+        }
+
+        // ============================================================
+        // CARRINHO
+        // ============================================================
         function addToCart(productId, productName, productPrice) {
             const existing = cart.find(item => item.id === productId);
             if (existing) {
@@ -408,12 +402,12 @@
         function showNotification(msg, isError = false) {
             const notif = document.createElement('div');
             notif.className = `fixed bottom-4 right-4 ${isError ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity`;
-            notif.textContent = msg;
+            notif.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i>${msg}`;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 3000);
         }
 
-        async function subscribeNewsletter() {
+        function subscribeNewsletter() {
             const email = document.getElementById('newsletterEmail').value;
             if (email && email.includes('@')) {
                 showNotification('Inscrito com sucesso!');
@@ -423,62 +417,9 @@
             }
         }
 
-        function clearFilters() {
-            document.querySelectorAll('.category-filter:checked').forEach(cb => cb.checked = false);
-            document.querySelectorAll('input[name="priceRange"]').forEach(radio => {
-                if (radio.value === '') radio.checked = true;
-            });
-            applyFiltersAndRender();
-        }
-
-        // Auth functions
-        async function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (response.ok) {
-                        currentUser = await response.json();
-                    } else {
-                        localStorage.removeItem('token');
-                    }
-                } catch (error) {
-                    console.error('Auth error:', error);
-                }
-            }
-            updateAuthButtons();
-        }
-
-        function updateAuthButtons() {
-            const container = document.getElementById('authButtons');
-            if (!container) return;
-            
-            if (currentUser) {
-                container.innerHTML = `
-                    <span class="text-sm text-gray-600 hidden md:block">Olá, ${currentUser.email?.split('@')[0] || currentUser.name}</span>
-                    <button onclick="logout()" class="text-gray-700 hover:text-red-600 transition">
-                        <i class="fas fa-sign-out-alt text-xl"></i>
-                    </button>
-                    ${currentUser.role === 'admin' ? '<a href="admin.html" class="text-gray-700 hover:text-blue-600 transition"><i class="fas fa-cog text-xl"></i></a>' : ''}
-                `;
-            } else {
-                container.innerHTML = `
-                    <a href="login.html" class="text-gray-700 hover:text-blue-600 transition">
-                        <i class="fas fa-user text-xl"></i>
-                    </a>
-                `;
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';
-        }
-
-        // Event listeners
+        // ============================================================
+        // EVENT LISTENERS
+        // ============================================================
         document.getElementById('sortSelect')?.addEventListener('change', () => {
             currentPage = 1;
             applyFiltersAndRender();
@@ -517,9 +458,11 @@
             document.getElementById('mobileMenu').classList.toggle('hidden');
         });
 
-        // Initialize
-        loadProducts();
+        // ============================================================
+        // INICIALIZAÇÃO
+        // ============================================================
         checkAuth();
+        loadProducts();
         updateCartCount();
     </script>
 </body>

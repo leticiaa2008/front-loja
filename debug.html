@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - B7Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-lg mx-auto bg-white rounded-lg shadow p-6">
+        <h1 class="text-2xl font-bold mb-4">Debug da Autenticação</h1>
+        
+        <div class="mb-4">
+            <h2 class="font-bold text-lg">LocalStorage:</h2>
+            <pre id="localStorageData" class="bg-gray-100 p-3 rounded text-sm mt-2"></pre>
+        </div>
+        
+        <div class="mb-4">
+            <h2 class="font-bold text-lg">Teste de API:</h2>
+            <div id="apiResult" class="bg-gray-100 p-3 rounded text-sm mt-2">Carregando...</div>
+        </div>
+        
+        <div class="flex gap-3">
+            <button onclick="limparStorage()" class="bg-red-500 text-white px-4 py-2 rounded">Limpar Storage</button>
+            <button onclick="window.location.href='login.html'" class="bg-blue-500 text-white px-4 py-2 rounded">Ir para Login</button>
+            <button onclick="window.location.href='index.html'" class="bg-green-500 text-white px-4 py-2 rounded">Ir para Index</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = "https://back-loja.vercel.app";
+        
+        function mostrarStorage() {
+            const data = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                data[key] = localStorage.getItem(key);
+            }
+            document.getElementById('localStorageData').innerHTML = JSON.stringify(data, null, 2);
+        }
+        
+        async function testarApi() {
+            const token = localStorage.getItem('b7store_token');
+            const resultDiv = document.getElementById('apiResult');
+            
+            if (!token) {
+                resultDiv.innerHTML = '❌ Nenhum token encontrado no localStorage';
+                return;
+            }
+            
+            resultDiv.innerHTML = '🔄 Testando token com a API...';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const user = await response.json();
+                    resultDiv.innerHTML = `✅ Token VÁLIDO!<br>Usuário: ${JSON.stringify(user, null, 2)}`;
+                } else {
+                    resultDiv.innerHTML = `❌ Token INVÁLIDO! Status: ${response.status}<br>Resposta: ${await response.text()}`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Erro na requisição: ${error.message}`;
+            }
+        }
+        
+        function limparStorage() {
+            localStorage.clear();
+            mostrarStorage();
+            testarApi();
+            alert('Storage limpo!');
+        }
+        
+        mostrarStorage();
+        testarApi();
+    </script>
+</body>
+</html>

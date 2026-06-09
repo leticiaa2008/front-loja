@@ -6,6 +6,32 @@
     <title>Carrinho - B7Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+        }
+        .product-card:hover { transform: translateY(-5px); transition: all 0.3s; }
+        .cart-badge { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+    </style>
 </head>
 <body class="bg-gray-50">
 
@@ -34,7 +60,7 @@
                     <div id="authButtons" class="flex items-center gap-4"></div>
                     <a href="checkout.html" class="relative">
                         <i class="fas fa-shopping-bag text-2xl text-gray-700"></i>
-                        <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hidden">0</span>
+                        <span id="cartCount" class="cart-badge hidden">0</span>
                     </a>
                     <button id="mobileMenuBtn" class="md:hidden text-2xl">
                         <i class="fas fa-bars"></i>
@@ -48,6 +74,7 @@
                 <a href="produtos.html" class="text-gray-600 py-2">Kits B7Web</a>
                 <a href="produtos.html" class="text-gray-600 py-2">Acessórios</a>
                 <a href="produtos.html" class="text-gray-600 py-2">Eletrônicos</a>
+                <input type="text" id="mobileSearch" placeholder="Pesquisar..." class="px-4 py-2 border rounded-lg mt-2">
             </div>
         </div>
     </header>
@@ -63,14 +90,11 @@
             <!-- Products Section -->
             <div class="lg:col-span-2">
                 <div class="bg-white rounded-lg shadow">
-                    <!-- Header -->
                     <div class="grid grid-cols-3 gap-4 p-4 border-b bg-gray-50 font-semibold">
                         <div>Produto</div>
                         <div class="text-center">Quantidade</div>
                         <div class="text-right">Preço</div>
                     </div>
-                    
-                    <!-- Cart Items -->
                     <div id="cartItems" class="divide-y">
                         <div class="p-8 text-center text-gray-500">
                             Seu carrinho está vazio. <a href="produtos.html" class="text-blue-600 hover:underline">Continue comprando</a>
@@ -86,15 +110,14 @@
                     <h3 class="font-bold mb-4">Calcular frete e prazo</h3>
                     <div class="flex gap-2">
                         <input type="text" id="cepInput" placeholder="Digite o CEP" class="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <button onclick="calculateShipping()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        <button onclick="calcularFrete()" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
                             Calcular
                         </button>
                     </div>
                 </div>
 
-                <!-- Shipping Result (hidden initially) -->
+                <!-- Shipping Result -->
                 <div id="shippingResult" class="bg-white rounded-lg shadow p-6 mb-6 hidden">
-                    <div class="text-sm text-gray-600 mb-2" id="shippingAddress">Rua das Flores - Jardins da Serra - Campos</div>
                     <div class="flex justify-between items-center">
                         <div class="text-sm" id="shippingDays">Receba em até 7 dias úteis</div>
                         <div class="font-bold text-blue-600 text-xl" id="shippingPrice">R$ 0,00</div>
@@ -119,7 +142,7 @@
                         <div class="text-center text-sm text-gray-500 py-2">
                             Forma de pagamento via PIX
                         </div>
-                        <button onclick="checkout()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
+                        <button id="finalizarBtn" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition font-semibold">
                             Continuar para pagamento
                         </button>
                         <a href="produtos.html" class="block text-center text-blue-600 hover:underline text-sm mt-4">
@@ -186,25 +209,164 @@
         </div>
     </footer>
 
+    <!-- MODAL DE LOGIN -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button id="closeModal" class="float-right text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            <div class="text-center mb-4">
+                <h2 class="text-xl font-bold">Faça login para continuar</h2>
+                <p class="text-gray-500 text-sm">Você precisa estar logado para finalizar a compra</p>
+            </div>
+            <div id="modalError" class="hidden bg-red-100 text-red-700 p-2 rounded mb-3 text-sm"></div>
+            <input type="email" id="modalEmail" placeholder="Seu e-mail" class="w-full px-4 py-2 border rounded-lg mb-3">
+            <input type="password" id="modalPassword" placeholder="Sua senha" class="w-full px-4 py-2 border rounded-lg mb-4">
+            <button id="modalLoginBtn" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">Entrar</button>
+            <div class="text-center mt-3">
+                <a href="cadastro-cliente.html" class="text-sm text-blue-600">Não tem conta? Cadastre-se</a>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE_URL = "https://back-loja.vercel.app";
         let currentUser = null;
         let cart = [];
         let shippingCost = 0;
-        let selectedCep = null;
 
-        // Load cart from localStorage
-        function loadCart() {
+        // ============================================================
+        // AUTENTICAÇÃO CORRETA (USANDO A MESMA API)
+        // ============================================================
+        async function verificarSessao() {
+            const token = localStorage.getItem('b7store_token');
+            
+            if (token) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                        headers: { 
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    if (response.ok) {
+                        currentUser = await response.json();
+                        console.log('Usuário logado:', currentUser.email);
+                    } else {
+                        localStorage.removeItem('b7store_token');
+                        localStorage.removeItem('b7store_user');
+                        currentUser = null;
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar auth:', error);
+                    currentUser = null;
+                }
+            } else {
+                currentUser = null;
+            }
+            
+            atualizarBotoesAuth();
+        }
+
+        function atualizarBotoesAuth() {
+            const container = document.getElementById('authButtons');
+            if (!container) return;
+            
+            if (currentUser) {
+                let nomeExibicao = "Usuário";
+                if (currentUser.name) {
+                    nomeExibicao = currentUser.name.split(' ')[0];
+                } else if (currentUser.email) {
+                    nomeExibicao = currentUser.email.split('@')[0];
+                }
+                
+                container.innerHTML = `
+                    <span class="text-sm text-gray-600 hidden md:block font-medium">Olá, ${nomeExibicao}</span>
+                    <button onclick="logout()" class="text-gray-700 hover:text-red-600 transition">
+                        <i class="fas fa-sign-out-alt text-xl"></i>
+                    </button>
+                    ${currentUser.role === 'admin' ? '<a href="cadastro.html" class="text-gray-700 hover:text-blue-600 transition"><i class="fas fa-cog text-xl"></i></a>' : ''}
+                `;
+            } else {
+                container.innerHTML = `<a href="login.html" class="text-gray-700 hover:text-blue-600 transition"><i class="fas fa-user text-xl"></i></a>`;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('b7store_token');
+            localStorage.removeItem('b7store_user');
+            currentUser = null;
+            atualizarBotoesAuth();
+            showNotification('Você saiu da conta');
+            setTimeout(() => window.location.reload(), 1000);
+        }
+
+        // ============================================================
+        // MODAL DE LOGIN
+        // ============================================================
+        const modal = document.getElementById('loginModal');
+        
+        function showLoginModal() {
+            modal.classList.add('active');
+            document.getElementById('modalEmail').value = '';
+            document.getElementById('modalPassword').value = '';
+            document.getElementById('modalError').classList.add('hidden');
+        }
+        
+        function hideLoginModal() {
+            modal.classList.remove('active');
+        }
+        
+        async function doLogin(email, password) {
+            const btn = document.getElementById('modalLoginBtn');
+            const errorDiv = document.getElementById('modalError');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+            errorDiv.classList.add('hidden');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.mensagem || data.message || 'Email ou senha inválidos');
+                }
+                
+                localStorage.setItem('b7store_token', data.token);
+                localStorage.setItem('b7store_user', JSON.stringify(data.usuario));
+                
+                currentUser = data.usuario;
+                atualizarBotoesAuth();
+                hideLoginModal();
+                showNotification('✅ Login realizado com sucesso!');
+                return true;
+                
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.remove('hidden');
+                return false;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Entrar';
+            }
+        }
+
+        // ============================================================
+        // FUNÇÕES DO CARRINHO
+        // ============================================================
+        function carregarCarrinho() {
             const savedCart = localStorage.getItem('cart');
             if (savedCart) {
                 cart = JSON.parse(savedCart);
             }
-            renderCart();
-            updateCartCount();
+            renderizarCarrinho();
         }
 
-        // Render cart items
-        async function renderCart() {
+        async function renderizarCarrinho() {
             const container = document.getElementById('cartItems');
             const itemCountSpan = document.getElementById('itemCount');
             
@@ -217,83 +379,76 @@
                     </div>
                 `;
                 itemCountSpan.textContent = '(0 itens)';
-                updateTotals();
+                atualizarTotais();
                 return;
             }
 
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             itemCountSpan.textContent = `(${totalItems} ${totalItems === 1 ? 'item' : 'itens'})`;
 
-            // Fetch full product details from API
-            let itemsHtml = '';
+            let html = '';
             for (const item of cart) {
-                let product = item;
-                if (item.id && !item.name) {
-                    try {
-                        const response = await fetch(`${API_BASE_URL}/api/products/${item.id}`);
-                        if (response.ok) {
-                            product = await response.json();
-                            product.quantity = item.quantity;
-                        }
-                    } catch (error) {
-                        console.error('Error fetching product:', error);
-                    }
-                }
+                let productPrice = item.price;
                 
-                itemsHtml += `
-                    <div class="grid grid-cols-3 gap-4 p-4 items-center" data-id="${item.id}">
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/produtos/${item.id}`);
+                    if (response.ok) {
+                        const product = await response.json();
+                        productPrice = product.preco;
+                    }
+                } catch(e) {}
+                
+                const itemTotal = (productPrice || 0) * item.quantity;
+                
+                html += `
+                    <div class="grid grid-cols-3 gap-4 p-4 items-center">
                         <div class="flex gap-3">
-                            <img src="${product.image_url || 'https://placehold.co/80x80/blue/white?text=Produto'}" alt="${product.name}" class="w-16 h-16 object-cover rounded">
+                            <img src="${item.image || 'https://placehold.co/80x80/blue/white?text=Produto'}" class="w-16 h-16 object-cover rounded">
                             <div>
-                                <div class="font-semibold">${product.name || 'Produto'}</div>
-                                <button onclick="removeFromCart(${item.id})" class="text-red-500 text-sm hover:underline mt-1">
+                                <div class="font-semibold">${item.name}</div>
+                                ${item.size ? `<div class="text-xs text-gray-500">Tamanho: ${item.size}</div>` : ''}
+                                <button onclick="removerDoCarrinho(${item.id})" class="text-red-500 text-sm hover:underline mt-1">
                                     <i class="fas fa-trash-alt mr-1"></i>Remover
                                 </button>
                             </div>
                         </div>
                         <div class="flex justify-center">
                             <div class="flex items-center gap-2">
-                                <button onclick="updateQuantity(${item.id}, ${item.quantity - 1})" class="w-8 h-8 bg-gray-100 rounded-full hover:bg-gray-200 transition">-</button>
+                                <button onclick="atualizarQuantidade(${item.id}, ${item.quantity - 1})" class="w-8 h-8 bg-gray-100 rounded-full hover:bg-gray-200 transition">-</button>
                                 <span class="w-8 text-center font-semibold">${item.quantity}</span>
-                                <button onclick="updateQuantity(${item.id}, ${item.quantity + 1})" class="w-8 h-8 bg-gray-100 rounded-full hover:bg-gray-200 transition">+</button>
+                                <button onclick="atualizarQuantidade(${item.id}, ${item.quantity + 1})" class="w-8 h-8 bg-gray-100 rounded-full hover:bg-gray-200 transition">+</button>
                             </div>
                         </div>
-                        <div class="text-right font-semibold">
-                            R$ ${((product.price || 0) * item.quantity).toFixed(2)}
-                        </div>
+                        <div class="text-right font-semibold">R$ ${itemTotal.toFixed(2)}</div>
                     </div>
                 `;
             }
-            container.innerHTML = itemsHtml;
-            updateTotals();
+            container.innerHTML = html;
+            atualizarTotais();
+            atualizarContadorCarrinho();
         }
 
-        function updateQuantity(productId, newQuantity) {
-            if (newQuantity <= 0) {
-                removeFromCart(productId);
-                return;
+        function atualizarQuantidade(productId, novaQtd) {
+            if (novaQtd <= 0) {
+                cart = cart.filter(i => i.id !== productId);
+            } else {
+                const item = cart.find(i => i.id === productId);
+                if (item) item.quantity = novaQtd;
             }
-            
-            const item = cart.find(i => i.id === productId);
-            if (item) {
-                item.quantity = newQuantity;
-                localStorage.setItem('cart', JSON.stringify(cart));
-                renderCart();
-                updateCartCount();
-            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderizarCarrinho();
         }
 
-        function removeFromCart(productId) {
+        function removerDoCarrinho(productId) {
             cart = cart.filter(i => i.id !== productId);
             localStorage.setItem('cart', JSON.stringify(cart));
-            renderCart();
-            updateCartCount();
+            renderizarCarrinho();
             showNotification('Produto removido do carrinho!');
         }
 
-        function updateCartCount() {
+        function atualizarContadorCarrinho() {
             const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const badge = document.querySelector('#cartCount');
+            const badge = document.getElementById('cartCount');
             if (badge) {
                 if (count > 0) {
                     badge.textContent = count;
@@ -304,7 +459,7 @@
             }
         }
 
-        function updateTotals() {
+        function atualizarTotais() {
             const subtotal = cart.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
             const total = subtotal + shippingCost;
             
@@ -313,165 +468,219 @@
             
             if (shippingCost > 0) {
                 document.getElementById('shippingDisplay').textContent = `R$ ${shippingCost.toFixed(2)}`;
+            } else if (shippingCost === 0 && document.getElementById('cepInput').value) {
+                document.getElementById('shippingDisplay').textContent = `GRÁTIS`;
             } else {
                 document.getElementById('shippingDisplay').textContent = '--';
             }
         }
 
-        async function calculateShipping() {
+        // ============================================================
+        // FRETE
+        // ============================================================
+        window.calcularFrete = function() {
             const cep = document.getElementById('cepInput').value.replace(/\D/g, '');
             if (cep.length !== 8) {
                 showNotification('Digite um CEP válido com 8 dígitos', true);
                 return;
             }
             
-            // Simulate shipping calculation (in real app, call a CEP API)
-            showNotification('Calculando frete...');
+            const lastDigit = parseInt(cep.slice(-1));
+            if (lastDigit < 3) {
+                shippingCost = 0;
+                document.getElementById('shippingDays').textContent = 'Frete Grátis! Entrega em até 5 dias úteis';
+            } else if (lastDigit < 6) {
+                shippingCost = 15.90;
+                document.getElementById('shippingDays').textContent = 'Receba em até 7 dias úteis';
+            } else {
+                shippingCost = 29.90;
+                document.getElementById('shippingDays').textContent = 'Receba em até 10 dias úteis';
+            }
             
-            // Mock shipping calculation based on CEP
-            setTimeout(() => {
-                const lastDigit = parseInt(cep.slice(-1));
-                if (lastDigit < 3) {
-                    shippingCost = 0;
-                    document.getElementById('shippingDays').textContent = 'Frete Grátis! Entrega em até 5 dias úteis';
-                } else if (lastDigit < 6) {
-                    shippingCost = 15.90;
-                    document.getElementById('shippingDays').textContent = 'Receba em até 7 dias úteis';
-                } else {
-                    shippingCost = 29.90;
-                    document.getElementById('shippingDays').textContent = 'Receba em até 10 dias úteis';
-                }
-                
-                document.getElementById('shippingPrice').textContent = shippingCost === 0 ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2)}`;
-                document.getElementById('shippingResult').classList.remove('hidden');
-                updateTotals();
-                showNotification(`Frete calculado: ${shippingCost === 0 ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2)}`}`);
-            }, 1000);
+            document.getElementById('shippingPrice').textContent = shippingCost === 0 ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2)}`;
+            document.getElementById('shippingResult').classList.remove('hidden');
+            atualizarTotais();
+            showNotification(`Frete calculado: ${shippingCost === 0 ? 'GRÁTIS' : `R$ ${shippingCost.toFixed(2)}`}`);
         }
 
-        function checkout() {
+        // ============================================================
+        // FINALIZAR COMPRA
+        // ============================================================
+        async function finalizarCompra() {
             if (cart.length === 0) {
                 showNotification('Seu carrinho está vazio!', true);
                 return;
             }
             
-            const token = localStorage.getItem('token');
+            // Verificar se está logado
+            const token = localStorage.getItem('b7store_token');
+            
             if (!token) {
-                showNotification('Faça login para finalizar a compra!', true);
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1500);
+                // Salvar URL para redirecionar após login
+                localStorage.setItem('redirect_after_login', window.location.href);
+                showLoginModal();
                 return;
             }
             
-            // Create order
-            const orderData = {
-                items: cart.map(item => ({
-                    product_id: item.id,
-                    quantity: item.quantity,
-                    price: item.price
-                })),
-                total: cart.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0) + shippingCost,
-                shipping_cost: shippingCost,
-                cep: document.getElementById('cepInput').value
-            };
-            
-            fetch(`${API_BASE_URL}/api/orders`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(orderData)
-            })
-            .then(async response => {
-                if (response.ok) {
-                    // Clear cart
-                    localStorage.removeItem('cart');
-                    showNotification('Pedido realizado com sucesso!');
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 2000);
-                } else {
-                    const error = await response.json();
-                    throw new Error(error.mensagem || 'Erro ao criar pedido');
+            // Verificar se o token ainda é válido
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) {
+                    localStorage.removeItem('b7store_token');
+                    localStorage.removeItem('b7store_user');
+                    localStorage.setItem('redirect_after_login', window.location.href);
+                    showLoginModal();
+                    return;
                 }
-            })
-            .catch(error => {
-                showNotification(error.message, true);
-            });
+                
+                const user = await response.json();
+                
+                showNotification('Processando pedido...');
+                
+                // Buscar preços atualizados
+                const items = [];
+                for (const item of cart) {
+                    let precoAtual = item.price;
+                    try {
+                        const prodResponse = await fetch(`${API_BASE_URL}/api/produtos/${item.id}`);
+                        if (prodResponse.ok) {
+                            const produto = await prodResponse.json();
+                            precoAtual = produto.preco;
+                        }
+                    } catch(e) {}
+                    
+                    items.push({
+                        product_id: item.id,
+                        product_name: item.name,
+                        quantity: item.quantity,
+                        price: precoAtual,
+                        size: item.size || null
+                    });
+                }
+                
+                const subtotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+                const total = subtotal + shippingCost;
+                const cep = document.getElementById('cepInput').value || '';
+                
+                // Criar pedido via API
+                const orderResponse = await fetch(`${API_BASE_URL}/api/pedidos`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        items: items,
+                        total: total,
+                        subtotal: subtotal,
+                        shipping_cost: shippingCost,
+                        cep: cep,
+                        status: 'pending'
+                    })
+                });
+                
+                if (!orderResponse.ok) {
+                    const errorData = await orderResponse.json();
+                    throw new Error(errorData.mensagem || 'Erro ao criar pedido');
+                }
+                
+                const orderData = await orderResponse.json();
+                console.log('Pedido criado:', orderData);
+                
+                // Limpar carrinho
+                localStorage.removeItem('cart');
+                cart = [];
+                renderizarCarrinho();
+                atualizarContadorCarrinho();
+                
+                showNotification('✅ Pedido realizado com sucesso! Obrigado pela compra!');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Erro ao finalizar compra:', error);
+                showNotification('❌ ' + error.message, true);
+            }
         }
 
         function showNotification(msg, isError = false) {
             const notif = document.createElement('div');
-            notif.className = `fixed bottom-4 right-4 ${isError ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50`;
-            notif.textContent = msg;
+            notif.className = `fixed bottom-4 right-4 ${isError ? 'bg-red-500' : 'bg-green-500'} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity`;
+            notif.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'} mr-2"></i>${msg}`;
             document.body.appendChild(notif);
             setTimeout(() => notif.remove(), 3000);
         }
 
-        async function subscribeNewsletter() {
+        window.subscribeNewsletter = function() {
             const email = document.getElementById('newsletterEmail').value;
-            if (email) {
-                showNotification('Inscrito com sucesso!');
+            if (email && email.includes('@')) {
+                showNotification('📧 Inscrito com sucesso!');
                 document.getElementById('newsletterEmail').value = '';
+            } else {
+                showNotification('Digite um e-mail válido!', true);
             }
         }
 
-        // Auth functions
-        async function checkAuth() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (response.ok) {
-                        currentUser = await response.json();
-                    } else {
-                        localStorage.removeItem('token');
-                    }
-                } catch (error) {
-                    console.error('Auth error:', error);
+        // ============================================================
+        // EVENTOS
+        // ============================================================
+        document.getElementById('finalizarBtn').addEventListener('click', finalizarCompra);
+        document.getElementById('modalLoginBtn').addEventListener('click', async () => {
+            const email = document.getElementById('modalEmail').value;
+            const password = document.getElementById('modalPassword').value;
+            if (email && password) {
+                const logged = await doLogin(email, password);
+                if (logged) {
+                    setTimeout(() => finalizarCompra(), 500);
                 }
             }
-            updateAuthButtons();
-        }
+        });
+        document.getElementById('closeModal').addEventListener('click', hideLoginModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideLoginModal();
+        });
 
-        function updateAuthButtons() {
-            const container = document.getElementById('authButtons');
-            if (!container) return;
-            
-            if (currentUser) {
-                container.innerHTML = `
-                    <span class="text-sm text-gray-600 hidden md:block">Olá, ${currentUser.email?.split('@')[0]}</span>
-                    <button onclick="logout()" class="text-gray-700 hover:text-red-600 transition">
-                        <i class="fas fa-sign-out-alt text-xl"></i>
-                    </button>
-                `;
-            } else {
-                container.innerHTML = `
-                    <a href="login.html" class="text-gray-700 hover:text-blue-600 transition">
-                        <i class="fas fa-user text-xl"></i>
-                    </a>
-                `;
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = 'index.html';
-        }
-
-        // Mobile menu
         document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
             document.getElementById('mobileMenu').classList.toggle('hidden');
         });
 
-        // Initialize
-        loadCart();
-        checkAuth();
+        document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = `produtos.html?search=${encodeURIComponent(e.target.value)}`;
+            }
+        });
+
+        document.getElementById('mobileSearch')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                window.location.href = `produtos.html?search=${encodeURIComponent(e.target.value)}`;
+            }
+        });
+
+        // Verificar se veio de redirect após login
+        const redirectAfterLogin = localStorage.getItem('redirect_after_login');
+        if (redirectAfterLogin === window.location.href) {
+            localStorage.removeItem('redirect_after_login');
+            // Pequeno delay para garantir que a sessão foi carregada
+            setTimeout(() => {
+                verificarSessao().then(() => {
+                    if (currentUser) {
+                        finalizarCompra();
+                    }
+                });
+            }, 500);
+        }
+
+        // ============================================================
+        // INICIALIZAR
+        // ============================================================
+        verificarSessao();
+        carregarCarrinho();
+        atualizarContadorCarrinho();
     </script>
 </body>
 </html>

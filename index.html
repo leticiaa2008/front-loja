@@ -27,7 +27,6 @@
     <header class="bg-white shadow-md sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
-                <!-- Logo -->
                 <div class="flex items-center gap-8">
                     <a href="index.html" class="text-2xl font-bold text-slate-900">B7<span class="text-blue-600">Store</span></a>
                     <nav class="hidden md:flex gap-6">
@@ -38,7 +37,6 @@
                     </nav>
                 </div>
 
-                <!-- Right Side -->
                 <div class="flex items-center gap-4">
                     <input type="text" id="searchInput" placeholder="Pesquisar..." class="hidden md:block px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <div id="authButtons" class="flex items-center gap-4"></div>
@@ -53,7 +51,6 @@
             </div>
         </div>
         
-        <!-- Mobile Menu -->
         <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
             <div class="container mx-auto px-4 py-4 flex flex-col gap-3">
                 <a href="produtos.html" class="text-slate-600 py-2">Camisetas</a>
@@ -61,7 +58,7 @@
                 <a href="produtos.html" class="text-slate-600 py-2">Acessórios</a>
                 <a href="produtos.html" class="text-slate-600 py-2">Eletrônicos</a>
                 <input type="text" id="mobileSearch" placeholder="Pesquisar..." class="px-4 py-2 border rounded-lg mt-2">
-                <div class="border-t pt-3 mt-2 flex flex-col gap-2">
+                <div class="border-t pt-3 mt-2 flex flex-col gap-2" id="mobileAuthButtons">
                     <a href="login.html" class="text-blue-600 font-semibold">Entrar</a>
                     <a href="cadastro-cliente.html" class="text-slate-600">Criar conta</a>
                 </div>
@@ -190,65 +187,137 @@
     </footer>
 
     <script>
-        // ============================================================
-        // CONFIGURAÇÕES
-        // ============================================================
         const API_BASE_URL = "https://back-loja.vercel.app";
         let currentUser = null;
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
         // ============================================================
-        // AUTENTICAÇÃO
+        // AUTENTICAÇÃO (Supabase)
         // ============================================================
-        async function checkAuth() {
-            const token = localStorage.getItem('b7store_token');
-            if (token) {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    if (response.ok) {
-                        currentUser = await response.json();
-                    } else {
-                        localStorage.removeItem('b7store_token');
-                        localStorage.removeItem('b7store_user');
-                        currentUser = null;
-                    }
-                } catch (error) {
-                    currentUser = null;
+        
+        // Buscar token do Supabase no localStorage
+        function getSupabaseToken() {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('sb-') && key.includes('-auth-token')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (data && data.access_token) {
+                            return data.access_token;
+                        }
+                    } catch(e) {}
                 }
             }
-            updateAuthButtons();
+            return null;
+        }
+        
+        // Buscar usuário do Supabase no localStorage
+        function getSupabaseUser() {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('sb-') && key.includes('-auth-token')) {
+                    try {
+                        const data = JSON.parse(localStorage.getItem(key));
+                        if (data && data.user) {
+                            return data.user;
+                        }
+                    } catch(e) {}
+                }
+            }
+            return null;
+        }
+        
+        async function checkAuth() {
+            const token = getSupabaseToken();
+            
+            if (token) {
+                // Carregar usuário do storage primeiro
+                const storedUser = getSupabaseUser();
+                if (storedUser) {
+                    currentUser = storedUser;
+                    updateAuthButtons();
+                }
+                
+                // Validar com a API
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+                        headers: { 
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        currentUser = await response.json();
+                        updateAuthButtons();
+                    }
+                } catch (error) {
+                    console.warn('Erro ao validar token:', error);
+                }
+            } else {
+                currentUser = null;
+                updateAuthButtons();
+            }
         }
 
         function updateAuthButtons() {
             const container = document.getElementById('authButtons');
-            if (!container) return;
+            const mobileContainer = document.getElementById('mobileAuthButtons');
             
-            if (currentUser) {
-                container.innerHTML = `
-                    <span class="text-sm text-slate-600 hidden md:block">Olá, ${currentUser.name || currentUser.email?.split('@')[0]}</span>
-                    <button onclick="logout()" class="text-slate-700 hover:text-red-600 transition" title="Sair">
-                        <i class="fas fa-sign-out-alt text-xl"></i>
-                    </button>
-                    ${currentUser.role === 'admin' ? '<a href="cadastro.html" class="text-slate-700 hover:text-blue-600 transition" title="Admin"><i class="fas fa-cog text-xl"></i></a>' : ''}
-                `;
+            if (currentUser && currentUser.email) {
+                // Pegar nome do email ou metadata
+                let nomeExibicao = currentUser.email.split('@')[0];
+                if (currentUser.user_metadata?.name) {
+                    nomeExibicao = currentUser.user_metadata.name.split(' ')[0];
+                } else if (currentUser.name) {
+                    nomeExibicao = currentUser.name.split(' ')[0];
+                }
+                
+                // Verificar se é admin
+                const isAdmin = currentUser.email === 'admin@admin.com' || 
+                               currentUser.user_metadata?.role === 'admin' ||
+                               currentUser.role === 'admin';
+                
+                if (container) {
+                    container.innerHTML = `
+                        <span class="text-sm text-gray-600 font-medium">Olá, ${nomeExibicao}</span>
+                        <button onclick="logout()" class="text-gray-700 hover:text-red-600 transition" title="Sair">
+                            <i class="fas fa-sign-out-alt text-xl"></i>
+                        </button>
+                        ${isAdmin ? '<a href="cadastro.html" class="text-gray-700 hover:text-blue-600 transition"><i class="fas fa-cog text-xl"></i></a>' : ''}
+                    `;
+                }
+                
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-medium">Olá, ${nomeExibicao}</span>
+                            <button onclick="logout()" class="text-red-600">Sair</button>
+                        </div>
+                        ${isAdmin ? '<a href="cadastro.html" class="text-blue-600">Painel Admin</a>' : ''}
+                    `;
+                }
             } else {
-                container.innerHTML = `
-                    <a href="login.html" class="text-slate-700 hover:text-blue-600 transition" title="Entrar">
-                        <i class="fas fa-user text-xl"></i>
-                    </a>
-                    <a href="cadastro-cliente.html" class="text-slate-600 hover:text-blue-600 transition text-sm hidden md:block">
-                        Criar conta
-                    </a>
-                `;
+                if (container) {
+                    container.innerHTML = `<a href="login.html" class="text-gray-700 hover:text-blue-600 transition"><i class="fas fa-user text-xl"></i></a>`;
+                }
+                if (mobileContainer) {
+                    mobileContainer.innerHTML = `
+                        <a href="login.html" class="text-blue-600 font-semibold">Entrar</a>
+                        <a href="cadastro-cliente.html" class="text-slate-600">Criar conta</a>
+                    `;
+                }
             }
         }
 
         function logout() {
-            localStorage.removeItem('b7store_token');
-            localStorage.removeItem('b7store_user');
-            window.location.href = 'index.html';
+            // Remover token do Supabase
+            const sbKey = Object.keys(localStorage).find(k => k.startsWith('sb-') && k.includes('-auth-token'));
+            if (sbKey) localStorage.removeItem(sbKey);
+            currentUser = null;
+            updateAuthButtons();
+            showNotification('Você saiu da conta');
+            setTimeout(() => window.location.reload(), 1000);
         }
 
         // ============================================================
@@ -416,9 +485,13 @@
         // ============================================================
         // INICIALIZAÇÃO
         // ============================================================
-        checkAuth();
-        loadProducts();
-        loadCartCount();
+        async function init() {
+            await checkAuth();
+            loadProducts();
+            loadCartCount();
+        }
+        
+        init();
     </script>
 </body>
 </html>
